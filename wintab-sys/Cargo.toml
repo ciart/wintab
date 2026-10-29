@@ -1,0 +1,23 @@
+[package]
+name = "wintab-sys"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Raw bindings for Wacom's Wintab 1.4 tablet API (WINTAB.H, PKTDEF.H), loaded at run time"
+license = "MIT"
+repository = "https://github.com/ciart/wintab"
+readme = "../README.md"
+keywords = ["wintab", "wacom", "tablet", "pen", "stylus"]
+categories = ["external-ffi-bindings", "os::windows-apis", "hardware-support"]
+
+[lib]
+path = "src/wintab.rs"
+doctest = false
+
+[package.metadata.docs.rs]
+default-target = "x86_64-pc-windows-msvc"
+targets = ["x86_64-pc-windows-msvc"]
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_System_LibraryLoader"] }
+
