@@ -21,7 +21,7 @@ wintab::packet! {
     struct Sample { status, buttons, x, y, normal_pressure }
 }
 
-let wintab = unsafe { wintab::Wintab::load()? };
+let wintab = wintab::Wintab::load()?;
 let pressure = wintab.device(0).and_then(|device| device.pressure);
 let context = wintab.open::<Sample>(hwnd, &wintab::ContextOptions::new())?;
 

@@ -5,12 +5,15 @@
 //! fills and the struct the application reads cannot disagree. Contexts deliver window
 //! messages that [`Context::message`] decodes; the application keeps its own message loop.
 //!
+//! The safe API trusts the installed tablet driver, the only source of `wintab32.dll`, to
+//! behave as the Wintab specification describes.
+//!
 //! ```ignore
 //! wintab::packet! {
 //!     pub struct Sample { status, buttons, x, y, normal_pressure, orientation }
 //! }
 //!
-//! let wintab = unsafe { wintab::Wintab::load()? };
+//! let wintab = wintab::Wintab::load()?;
 //! let context = wintab.open::<Sample>(hwnd, &wintab::ContextOptions::default())?;
 //! // In the window procedure:
 //! if let Some(wintab::Message::Packet { serial }) = context.message(msg, wparam, lparam) {
@@ -52,10 +55,9 @@ pub struct Wintab {
 impl Wintab {
     /// Loads `wintab32.dll` from the system directory and checks that the functions this
     /// crate calls are exported.
-    ///
-    /// # Safety
-    /// Runs the tablet driver's `DllMain`.
-    pub unsafe fn load() -> Result<Self> {
+    pub fn load() -> Result<Self> {
+        // SAFETY: only the system directory is searched, and the installed tablet driver is
+        // trusted like any other system library.
         let lib = unsafe { Wintab32::load() }.map_err(Error::NotInstalled)?;
         for (name, present) in [
             ("WTInfoW", lib.WTInfoW.is_some()),

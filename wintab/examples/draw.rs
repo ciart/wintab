@@ -51,7 +51,7 @@ mod draw {
 
     pub fn run() -> Result<(), Box<dyn std::error::Error>> {
         unsafe { SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)? };
-        let wintab = unsafe { Wintab::load()? };
+        let wintab = Wintab::load()?;
         let pressure = wintab.device(0).and_then(|device| device.pressure);
 
         let instance = unsafe { GetModuleHandleW(None)? };
