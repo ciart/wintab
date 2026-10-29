@@ -1,6 +1,11 @@
 //! Rust declarations of Wacom's Wintab 1.4 SDK headers (`WINTAB.H`, `PKTDEF.H`), Win32 only.
 #![cfg(target_os = "windows")]
-#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, clippy::upper_case_acronyms)]
+#![allow(
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    clippy::upper_case_acronyms
+)]
 
 mod pktdef;
 

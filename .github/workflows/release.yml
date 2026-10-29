@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      crate:
+        required: true
+        type: choice
+        options: [wintab, wintab-sys]
+      bump:
+        required: true
+        type: choice
+        options: [patch, minor, major]
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.bump.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-edit
+
+      - id: bump
+        env:
+          CRATE: ${{ inputs.crate }}
+          BUMP: ${{ inputs.bump }}
+        run: |
+          cargo set-version -p "$CRATE" --bump "$BUMP"
+          version=$(cargo metadata --no-deps --format-version 1 \
+            | jq -r --arg crate "$CRATE" '.packages[] | select(.name == $crate) | .version')
+          tag="$CRATE-v$version"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: release $CRATE $version"
+          git tag "$tag"
+          git push origin "HEAD:$GITHUB_REF_NAME" "$tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: bump
+    uses: ./.github/workflows/publish.yml
+    with:
+      tag: ${{ needs.bump.outputs.tag }}
+    secrets: inherit

@@ -1,3 +1,3 @@
 [workspace]
 resolver = "3"
-members = ["wintab-sys"]
+members = ["wintab", "wintab-sys"]

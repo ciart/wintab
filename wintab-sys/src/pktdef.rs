@@ -17,6 +17,7 @@ macro_rules! packet {
         // `WTPacketsGet` arrays misalign if this changes.
         #[repr(C, packed(4))]
         #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+        #[allow(non_snake_case)]
         $vis struct $name {
             $(pub $field: $crate::packet!(@type $field $($mode)?),)*
         }
@@ -97,6 +98,7 @@ macro_rules! packetext {
         // Unlike `PACKET`, drivers keep MSVC's padding after `pkBase`; packing this misreads every field.
         #[repr(C)]
         #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+        #[allow(non_snake_case)]
         $vis struct $name {
             pub pkBase: $crate::EXTENSIONBASE,
             $(pub $field: $crate::packetext!(@type $field),)*
@@ -118,7 +120,10 @@ macro_rules! packetext {
 pub const fn __assert_order(order: &[u32]) {
     let mut i = 1;
     while i < order.len() {
-        assert!(order[i - 1] < order[i], "fields must follow PKTDEF.H order without repeats");
+        assert!(
+            order[i - 1] < order[i],
+            "fields must follow PKTDEF.H order without repeats"
+        );
         i += 1;
     }
 }
