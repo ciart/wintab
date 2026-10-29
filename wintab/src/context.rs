@@ -307,6 +307,7 @@ impl<P: Packet> Context<P> {
     pub fn packet_ext<E: PacketExt>(&self, source: HCTX, serial: u32) -> Option<E> {
         #[repr(C, align(8))]
         struct Buffer([u8; 256]);
+        const { assert!(size_of::<E>() <= size_of::<Buffer>() && align_of::<E>() <= 8) };
 
         if E::EXTENSIONS != self.extensions.as_slice() {
             return None;
