@@ -52,7 +52,6 @@ mod draw {
     pub fn run() -> Result<(), Box<dyn std::error::Error>> {
         unsafe { SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)? };
         let wintab = Wintab::load()?;
-        let pressure = wintab.device(0).and_then(|device| device.pressure);
 
         let instance = unsafe { GetModuleHandleW(None)? };
         let class = WNDCLASSW {
@@ -82,6 +81,7 @@ mod draw {
         };
 
         let context = wintab.open::<Sample>(hwnd, &ContextOptions::new().name("wintab draw"))?;
+        let pressure = context.device().and_then(|device| device.pressure);
         CANVAS.set(Some(Canvas {
             hwnd,
             context,

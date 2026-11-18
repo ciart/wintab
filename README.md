@@ -22,8 +22,8 @@ wintab::packet! {
 }
 
 let wintab = wintab::Wintab::load()?;
-let pressure = wintab.device(0).and_then(|device| device.pressure);
 let context = wintab.open::<Sample>(hwnd, &wintab::ContextOptions::new())?;
+let pressure = context.device().and_then(|device| device.pressure);
 
 // In the window procedure of `hwnd`:
 match context.message(msg, wparam, lparam) {

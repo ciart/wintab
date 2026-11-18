@@ -7,7 +7,7 @@ use windows::core::BOOL;
 
 use crate::extension::{Control, ControlOverride, Extension, Location, PacketExt};
 use crate::sys::{self, HCTX, LOGCONTEXTW};
-use crate::{Error, Message, Packet, Result, Wintab};
+use crate::{Device, Error, Message, Packet, Result, Wintab};
 
 /// Where a context's margin lies, inside which the cursor keeps reporting at the edge.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
@@ -203,6 +203,11 @@ impl<P: Packet> Context<P> {
     /// The context's current settings, as the driver reports them.
     pub fn logical(&self) -> LOGCONTEXTW {
         self.logical.get()
+    }
+
+    /// The tablet the context reads from (`lcDevice`), which need not be the first one.
+    pub fn device(&self) -> Option<Device> {
+        self.wintab.device(self.logical.get().lcDevice)
     }
 
     /// Reads the settings again. Call after [`Message::Update`] or [`Message::InfoChange`],
