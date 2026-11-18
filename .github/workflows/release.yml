@@ -45,6 +45,8 @@ jobs:
   publish:
     needs: bump
     uses: ./.github/workflows/publish.yml
+    permissions:
+      contents: read
+      id-token: write
     with:
       tag: ${{ needs.bump.outputs.tag }}
-    secrets: inherit
