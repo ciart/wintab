@@ -102,7 +102,12 @@ mod draw {
         Ok(())
     }
 
-    extern "system" fn window_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {
+    extern "system" fn window_proc(
+        hwnd: HWND,
+        msg: u32,
+        wparam: WPARAM,
+        lparam: LPARAM,
+    ) -> LRESULT {
         let handled = CANVAS.with_borrow_mut(|canvas| {
             let Some(canvas) = canvas else {
                 return false;
@@ -110,7 +115,9 @@ mod draw {
             match msg {
                 WM_PAINT => canvas.paint(),
                 WM_ACTIVATE => {
-                    let _ = canvas.context.overlap(wparam.0 & 0xFFFF != WA_INACTIVE as usize);
+                    let _ = canvas
+                        .context
+                        .overlap(wparam.0 & 0xFFFF != WA_INACTIVE as usize);
                     return false;
                 }
                 WM_KEYDOWN if wparam.0 == 0x1B => {
@@ -151,7 +158,9 @@ mod draw {
                     }
                     unsafe { ReleaseDC(Some(self.hwnd), hdc) };
                 }
-                Message::Proximity { entering: false, .. } => self.last = None,
+                Message::Proximity {
+                    entering: false, ..
+                } => self.last = None,
                 Message::Update { .. } | Message::InfoChange { .. } => self.context.refresh(),
                 _ => {}
             }
@@ -159,7 +168,13 @@ mod draw {
         }
 
         fn stroke(&mut self, packet: Sample) -> Option<Segment> {
-            let Sample { status, buttons, x, y, normal_pressure } = packet;
+            let Sample {
+                status,
+                buttons,
+                x,
+                y,
+                normal_pressure,
+            } = packet;
             let pressure = self
                 .pressure
                 .map_or(1., |axis| axis.normalize(normal_pressure as i32));

@@ -319,8 +319,7 @@ impl<P: Packet> Context<P> {
         }
         let mut buffer = Buffer([0; 256]);
         let lib = self.wintab.lib();
-        if !unsafe { (lib.WTPacket.unwrap())(source, serial, buffer.0.as_mut_ptr() as _) }
-            .as_bool()
+        if !unsafe { (lib.WTPacket.unwrap())(source, serial, buffer.0.as_mut_ptr() as _) }.as_bool()
         {
             return None;
         }
