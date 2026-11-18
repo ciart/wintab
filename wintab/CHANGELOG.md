@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+### Features
+
+- **Breaking:** remove windows types from the public API
+
 ## 0.1.3
 
 ### Fixes
