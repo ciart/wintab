@@ -3,7 +3,7 @@ header = "# Changelog"
 body = """
 
 {% if version %}{% set parts = version | split(pat="-v") %}\
-## {{ parts[0] }} {{ parts[1] }}
+## {{ parts[1] }}
 {% else %}\
 ## Unreleased
 {% endif %}\

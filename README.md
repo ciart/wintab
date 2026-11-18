@@ -81,6 +81,11 @@ field to `PACKETMODE`; relative pressure fields become `i32` as in the header. E
 (`pkFKeys`, `pkTilt`) have no fixed bit: OR their `EXT_MASK` into `lcPktData` yourself.
 `packetext!` builds `PACKETEXT` the same way, with `pkBase` always first.
 
+## Changelog
+
+[`wintab`](https://github.com/ciart/wintab/blob/main/wintab/CHANGELOG.md),
+[`wintab-sys`](https://github.com/ciart/wintab/blob/main/wintab-sys/CHANGELOG.md).
+
 ## License
 
 MIT. The Wintab headers are copyright Wacom Company, Ltd., with portions copyright 1991-1998

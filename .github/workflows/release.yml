@@ -38,8 +38,8 @@ jobs:
             | jq -r --arg crate "$CRATE" '.packages[] | select(.name == $crate) | .version')
           tag="$CRATE-v$version"
           git cliff --include-path "$CRATE/**" --tag-pattern "^$CRATE-v[0-9]" \
-            --unreleased --tag "$tag" --prepend CHANGELOG.md
-          cat -s CHANGELOG.md > CHANGELOG.tmp && mv CHANGELOG.tmp CHANGELOG.md
+            --unreleased --tag "$tag" --prepend "$CRATE/CHANGELOG.md"
+          cat -s "$CRATE/CHANGELOG.md" > CHANGELOG.tmp && mv CHANGELOG.tmp "$CRATE/CHANGELOG.md"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -am "chore: release $CRATE $version"
