@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3
+
+### Fixes
+
+- resolve Context::device on default contexts
+
 ## 0.1.2
 
 ### Features
