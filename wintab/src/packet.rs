@@ -19,6 +19,11 @@ pub struct Status(pub u32);
 
 impl Status {
     /// The cursor is outside the context.
+    ///
+    /// This is not the pen leaving the tablet's sensing range, which only
+    /// [`Message::Proximity`](crate::Message::Proximity) with `hardware` reports; watch for
+    /// both. A pause between packets means neither: drivers need not send packets while
+    /// nothing changes.
     pub fn out_of_context(self) -> bool {
         self.0 & crate::sys::TPS_PROXIMITY != 0
     }

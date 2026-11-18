@@ -153,6 +153,10 @@ impl Wintab {
     }
 
     /// Opens a context that reports packets of type `P` to `hwnd`.
+    ///
+    /// A driver may refuse a packet that asks for data the tablet does not report. Check the
+    /// [`Device`] first, such as [`Device::orientation`], and declare a second packet type
+    /// without the field for tablets that lack it.
     pub fn open<P: Packet>(
         &self,
         hwnd: windows::Win32::Foundation::HWND,

@@ -47,7 +47,9 @@ pub enum Message {
         /// `CXS_*` status bits.
         status: u32,
     },
-    /// Driver information changed, for example a tablet was plugged in.
+    /// Driver information changed, for example a tablet was plugged in. Axis ranges read
+    /// earlier may be stale: call [`Context::refresh`](crate::Context::refresh) and read
+    /// [`Context::device`](crate::Context::device) again.
     InfoChange {
         /// The `WTI_*` category that changed.
         category: u16,
