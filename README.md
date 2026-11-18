@@ -1,5 +1,10 @@
 # wintab
 
+[![CI](https://github.com/ciart/wintab/actions/workflows/ci.yml/badge.svg)](https://github.com/ciart/wintab/actions/workflows/ci.yml)
+[![wintab](https://img.shields.io/crates/v/wintab?label=wintab)](https://crates.io/crates/wintab)
+[![wintab-sys](https://img.shields.io/crates/v/wintab-sys?label=wintab-sys)](https://crates.io/crates/wintab-sys)
+[![docs.rs](https://img.shields.io/docsrs/wintab)](https://docs.rs/wintab)
+
 Rust bindings for the Wintab 1.4 tablet API, in two crates:
 
 - `wintab`: a safe wrapper. `Wintab::load()` loads the driver, `Wintab::open` opens a
