@@ -21,10 +21,12 @@ jobs:
       tag: ${{ steps.bump.outputs.tag }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - uses: taiki-e/install-action@v2
         with:
-          tool: cargo-edit
+          tool: cargo-edit,git-cliff
 
       - id: bump
         env:
@@ -35,6 +37,9 @@ jobs:
           version=$(cargo metadata --no-deps --format-version 1 \
             | jq -r --arg crate "$CRATE" '.packages[] | select(.name == $crate) | .version')
           tag="$CRATE-v$version"
+          git cliff --include-path "$CRATE/**" --tag-pattern "^$CRATE-v[0-9]" \
+            --unreleased --tag "$tag" --prepend CHANGELOG.md
+          cat -s CHANGELOG.md > CHANGELOG.tmp && mv CHANGELOG.tmp CHANGELOG.md
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -am "chore: release $CRATE $version"
