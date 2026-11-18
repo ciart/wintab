@@ -129,7 +129,7 @@ pub struct Device {
 }
 
 pub(crate) fn device(wintab: &Wintab, index: u32) -> Option<Device> {
-    let category = sys::WTI_DEVICES + index;
+    let category = sys::WTI_DEVICES.checked_add(index)?;
     let name = wintab.info_string(category, sys::DVC_NAME)?;
     let axis = |item| wintab.info::<AXIS>(category, item).and_then(Axis::new);
     let orientation = wintab
@@ -182,7 +182,7 @@ pub struct Cursor {
 }
 
 pub(crate) fn cursor(wintab: &Wintab, index: u32) -> Option<Cursor> {
-    let category = sys::WTI_CURSORS + index;
+    let category = sys::WTI_CURSORS.checked_add(index)?;
     let buttons = wintab.info::<u8>(category, sys::CSR_BUTTONS).unwrap_or(0) as usize;
     let map = |item| {
         let mut map = wintab

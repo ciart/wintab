@@ -205,9 +205,13 @@ impl<P: Packet> Context<P> {
         self.logical.get()
     }
 
-    /// The tablet the context reads from (`lcDevice`), which need not be the first one.
+    /// The tablet the context reads from (`lcDevice`), which need not be the first one. The
+    /// first tablet when the context spans every tablet, as the driver's default contexts do.
     pub fn device(&self) -> Option<Device> {
-        self.wintab.device(self.logical.get().lcDevice)
+        // Wacom's default contexts report `lcDevice` as -1, a virtual device over all tablets.
+        let index = self.logical.get().lcDevice;
+        self.wintab
+            .device(if index == u32::MAX { 0 } else { index })
     }
 
     /// Reads the settings again. Call after [`Message::Update`] or [`Message::InfoChange`],
