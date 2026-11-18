@@ -58,7 +58,7 @@ impl Wintab {
     pub fn load() -> Result<Self> {
         // SAFETY: only the system directory is searched, and the installed tablet driver is
         // trusted like any other system library.
-        let lib = unsafe { Wintab32::load() }.map_err(Error::NotInstalled)?;
+        let lib = unsafe { Wintab32::load() }.map_err(|error| Error::NotInstalled(error.into()))?;
         for (name, present) in [
             ("WTInfoW", lib.WTInfoW.is_some()),
             ("WTOpenW", lib.WTOpenW.is_some()),
@@ -152,16 +152,14 @@ impl Wintab {
             .and_then(|(index, _)| self.info(sys::WTI_EXTENSIONS + index, sys::EXT_MASK))
     }
 
-    /// Opens a context that reports packets of type `P` to `hwnd`.
+    /// Opens a context that reports packets of type `P` to `hwnd`, the window's `HWND` as an
+    /// integer: `raw-window-handle`'s `Win32WindowHandle::hwnd`, or `hwnd.0 as isize` from the
+    /// `windows` crate.
     ///
     /// A driver may refuse a packet that asks for data the tablet does not report. Check the
     /// [`Device`] first, such as [`Device::orientation`], and declare a second packet type
     /// without the field for tablets that lack it.
-    pub fn open<P: Packet>(
-        &self,
-        hwnd: windows::Win32::Foundation::HWND,
-        options: &ContextOptions,
-    ) -> Result<Context<P>> {
+    pub fn open<P: Packet>(&self, hwnd: isize, options: &ContextOptions) -> Result<Context<P>> {
         Context::open(self.clone(), hwnd, options)
     }
 }

@@ -80,7 +80,8 @@ mod draw {
             )?
         };
 
-        let context = wintab.open::<Sample>(hwnd, &ContextOptions::new().name("wintab draw"))?;
+        let context =
+            wintab.open::<Sample>(hwnd.0 as isize, &ContextOptions::new().name("wintab draw"))?;
         let pressure = context.device().and_then(|device| device.pressure);
         CANVAS.set(Some(Canvas {
             hwnd,
@@ -142,7 +143,7 @@ mod draw {
 
     impl Canvas {
         fn handle(&mut self, msg: u32, wparam: WPARAM, lparam: LPARAM) -> bool {
-            let Some(message) = self.context.message(msg, wparam, lparam) else {
+            let Some(message) = self.context.message(msg, wparam.0, lparam.0) else {
                 return false;
             };
             match message {

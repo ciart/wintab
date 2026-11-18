@@ -4,7 +4,7 @@ use std::fmt;
 #[derive(Debug)]
 pub enum Error {
     /// `wintab32.dll` could not be loaded; usually no tablet driver is installed.
-    NotInstalled(windows::core::Error),
+    NotInstalled(std::io::Error),
     /// The driver does not export a function this crate needs.
     MissingFunction(&'static str),
     /// The driver is installed but Wintab services are not available.

@@ -2,7 +2,7 @@ use std::cell::Cell;
 use std::marker::PhantomData;
 use std::ops::RangeInclusive;
 
-use windows::Win32::Foundation::{HWND, LPARAM, WPARAM};
+use windows::Win32::Foundation::HWND;
 use windows::core::BOOL;
 
 use crate::extension::{Control, ControlOverride, Extension, Location, PacketExt};
@@ -122,7 +122,7 @@ pub struct Context<P: Packet> {
 }
 
 impl<P: Packet> Context<P> {
-    pub(crate) fn open(wintab: Wintab, hwnd: HWND, options: &ContextOptions) -> Result<Self> {
+    pub(crate) fn open(wintab: Wintab, hwnd: isize, options: &ContextOptions) -> Result<Self> {
         let category = if options.system {
             sys::WTI_DEFSYSCTX
         } else {
@@ -169,8 +169,9 @@ impl<P: Packet> Context<P> {
         logical.lcOutExtY = logical.lcInExtY;
 
         let lib = wintab.lib();
-        let handle =
-            unsafe { (lib.WTOpenW.unwrap())(hwnd, &mut logical, BOOL::from(options.enabled)) };
+        let handle = unsafe {
+            (lib.WTOpenW.unwrap())(HWND(hwnd as _), &mut logical, BOOL::from(options.enabled))
+        };
         if handle.0.is_null() {
             return Err(Error::OpenFailed);
         }
@@ -243,27 +244,28 @@ impl<P: Packet> Context<P> {
     }
 
     /// Decodes a window message addressed to this context. `None` for any other message.
-    pub fn message(&self, msg: u32, wparam: WPARAM, lparam: LPARAM) -> Option<Message> {
+    /// `wparam` and `lparam` are the window procedure's `WPARAM` and `LPARAM` values.
+    pub fn message(&self, msg: u32, wparam: usize, lparam: isize) -> Option<Message> {
         let offset = msg.checked_sub(self.logical.get().lcMsgBase)?;
         if offset > sys::WT_MAXOFFSET {
             return None;
         }
-        let from_lparam = lparam.0 as *mut _ == self.handle.0;
-        let from_wparam = wparam.0 as *mut _ == self.handle.0;
-        let low = lparam.0 as u32 as u16;
-        let high = (lparam.0 as u32 >> 16) as u16;
-        let status = lparam.0 as u32;
+        let from_lparam = lparam as *mut _ == self.handle.0;
+        let from_wparam = wparam as *mut _ == self.handle.0;
+        let low = lparam as u32 as u16;
+        let high = (lparam as u32 >> 16) as u16;
+        let status = lparam as u32;
         match offset + sys::WT_DEFBASE {
             sys::WT_PACKET if from_lparam => Some(Message::Packet {
-                serial: wparam.0 as u32,
+                serial: wparam as u32,
             }),
             sys::WT_CSRCHANGE if from_lparam => Some(Message::CursorChange {
-                serial: wparam.0 as u32,
+                serial: wparam as u32,
             }),
             // The driver's `lParam` here is not the handle `WTOpenW` returned, so it can't be matched.
             sys::WT_PACKETEXT if !self.extensions.is_empty() => Some(Message::PacketExt {
-                serial: wparam.0 as u32,
-                source: HCTX(lparam.0 as _),
+                serial: wparam as u32,
+                source: HCTX(lparam as _),
             }),
             sys::WT_PROXIMITY if from_wparam => Some(Message::Proximity {
                 entering: low != 0,
